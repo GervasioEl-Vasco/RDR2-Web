@@ -1,7 +1,9 @@
 # RDR2 Web Project Responsi Penrograman Web
 ## Anggota Kelompok
 Khoiri Faldi Marwan Hakim
+
 Ilham Huda
+
 Zaki fatah
 
 ## Deskripsi
@@ -18,6 +20,25 @@ Aplikasi web interaktif bertema Red Dead Redemption II (RDR2) yang menyediakan f
 - **Otentikasi**: Sistem login/register dengan validasi dan session.
 - **SPA**: Navigasi antar halaman tanpa reload penuh.
 - **Admin Panel**: Hanya admin yang bisa mengelola soal kuis.
+
+## Fitur Frontend
+- Navigasi dinamis tanpa reload (SPA)
+- Tampilan responsif dan tema western
+- Form login, register, dan validasi input
+- Komentar karakter dengan rating bintang
+- Daftar quiz, main quiz, dan lihat hasil quiz
+- Admin dapat membuat, mengedit, dan menghapus quiz melalui modal editor
+- Notifikasi dan alert interaktif
+- Animasi transisi halaman
+
+## Fungsi Backend (PHP)
+- **Autentikasi**: Login, register, cek session, logout
+- **Quiz API**: Ambil daftar quiz, detail quiz, tambah quiz (admin), edit quiz (admin), hapus quiz (admin)
+- **Komentar API**: Ambil komentar karakter, tambah komentar, edit komentar, hapus komentar
+- **Quiz Attempt API**: Simpan hasil percobaan quiz, ambil riwayat quiz user
+- **Session Handler**: Cek login, cek admin, ambil data user dari session
+- **Model**: Query database untuk users, quizzes, comments, quiz_attempts
+- **Proteksi**: Hanya admin yang bisa akses endpoint quiz management
 
 ## Struktur Folder
 - `index.html` — Entry point utama SPA
@@ -41,3 +62,5 @@ Aplikasi web interaktif bertema Red Dead Redemption II (RDR2) yang menyediakan f
 - Frontend: HTML, CSS, JavaScript (SPA)
 - Backend: PHP (API, session, DB)
 - Database: MySQL
+
+
