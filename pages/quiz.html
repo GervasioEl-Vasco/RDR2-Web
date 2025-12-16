@@ -1,0 +1,79 @@
+<div class="quiz-container">
+    <h1>RDR2 Guessing Game</h1>
+
+    <!-- Admin Panel (hidden by default) -->
+    <div id="admin-panel" class="admin-panel" style="display: none;">
+        <h2>Admin: Manage Quizzes <span class="admin-badge">ADMIN</span></h2>
+        <button id="create-quiz-btn" class="btn-admin">Create New Quiz</button>
+        <div id="quizzes-list" class="quizzes-list"></div>
+    </div>
+
+    <!-- Quiz Editor Modal -->
+    <div id="quiz-editor" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="editor-title">Create Quiz</h2>
+            <form id="quiz-form">
+                <input type="hidden" id="quiz-id">
+                <div class="form-group">
+                    <label for="quiz-title">Title:</label>
+                    <input type="text" id="quiz-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="quiz-description">Description:</label>
+                    <textarea id="quiz-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Questions:</label>
+                    <div id="questions-container">
+                        <!-- Questions will be added here -->
+                    </div>
+                    <button type="button" id="add-question-btn" class="btn-add">Add Question</button>
+                </div>
+                <button type="submit" class="btn-submit">Save Quiz</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quiz Gameplay -->
+    <div id="quiz-gameplay" class="quiz-gameplay">
+        <div id="quiz-selection" class="quiz-selection">
+            <h2>Select a Quiz</h2>
+            <div id="available-quizzes" class="available-quizzes"></div>
+        </div>
+
+        <div id="quiz-play" class="quiz-play" style="display: none;">
+            <div class="quiz-header">
+                <h2 id="current-quiz-title"></h2>
+                <div class="quiz-stats">
+                    <span id="question-counter">Question 1/10</span>
+                    <span id="score-display">Score: 0</span>
+                    <span id="streak-display">Streak: 0</span>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <div class="category-badge" id="category-badge"></div>
+                <p id="question-text"></p>
+                <div class="options" id="options"></div>
+                <button id="hint-btn" class="hint-btn">Show Hint</button>
+                <div id="hint-text" class="hint-text" style="display: none;"></div>
+            </div>
+
+            <div class="quiz-controls">
+                <button id="next-btn" class="btn-next" style="display: none;">Next Question</button>
+            </div>
+        </div>
+
+        <div id="quiz-results" class="quiz-results" style="display: none;">
+            <h2>Quiz Complete!</h2>
+            <div class="results-summary">
+                <p>Final Score: <span id="final-score"></span></p>
+                <p>Best Streak: <span id="best-streak"></span></p>
+                <p>Accuracy: <span id="accuracy"></span></p>
+            </div>
+            <button id="play-again-btn" class="btn-play-again">Play Again</button>
+            <button id="back-to-selection-btn" class="btn-back">Choose Another Quiz</button>
+        </div>
+    </div>
+</div>

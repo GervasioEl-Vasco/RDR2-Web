@@ -1,0 +1,381 @@
+/* --- Global Styles --- */
+
+:root {
+    --color-background: #000;
+    --color-primary: #8B0000; 
+    --color-accent: #FF9102; 
+    --color-text-light: #fff;
+    --color-text-dark: #333;
+    --color-figma-red: #F00B0B;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, input, textarea, select, button, a, p, h1, h2, h3, h4, h5, h6, li {
+    font-family: 'Righteous', sans-serif;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    min-height: 100vh;
+    overflow: hidden; 
+}
+
+/* Font Styling */
+p {
+    font-family: 'Righteous', sans-serif; 
+    font-weight: 400; 
+    font-size: 14px;
+}
+nav ul li a, 
+.character-tabs, 
+.char-content h1, 
+.about-right h2, 
+.card-info h3, 
+.game-title-area h1 {
+    font-family: 'Chinese Rock', sans-serif; 
+}
+
+/* --- Header & Navigasi Utama --- */
+header {
+    position: fixed; 
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end; 
+    align-items: flex-start;
+    padding: 20px 40px;
+    background: none;
+    border-bottom: none;
+}
+
+/* Styling Logo Gambar (Pojok Kiri Atas) */
+.logo-image-placeholder {
+    position: absolute;
+    height: 67px;
+    left: 1.9%;
+    top: 39px;
+    width: calc(100% - 1.9% - 84.8%); 
+    background: url(../media/logo.svg) no-repeat center center;
+    background-size: contain; 
+    z-index: 1001; 
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin-top: 20px; 
+}
+
+nav ul li {
+    margin-left: 30px;
+}
+
+nav ul li a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 0;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+nav ul li a:hover {
+    color: var(--color-accent);
+}
+
+nav ul li a.active {
+    color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent);
+}
+
+/* --- Konten Utama dengan Animasi --- */
+main {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    padding-top: 0; 
+    padding-bottom: 0;
+    
+    /* ANIMASI KUNCI: Transisi smooth untuk opacity dan transform */
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-content {
+    height: 100vh; 
+    width: 100%;
+    padding: 0;
+    position: relative; 
+    overflow-y: auto; 
+}
+
+/* --- HOME PAGE STYLE --- */
+#home.page-content {
+    background-color: var(--color-background); 
+    position: relative; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-image {
+    width: 100%;
+    height: 100%;
+    position: absolute; 
+    top: 0;
+    left: 0;
+    z-index: 1; 
+    
+    background-image: url('READ DEAD REDEMPTION.png'); 
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover; 
+}
+
+/* --- Media Query untuk Resolusi Desktop Standar (1366px) --- */
+@media (min-width: 1025px) and (max-width: 1366px) {
+    nav ul li {
+        margin-left: 20px;
+    }
+}
+/* Tambahkan di global.css */
+.comments-section {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    height: 400px;
+    background: rgba(0, 0, 0, 0.9);
+    border-left: 2px solid var(--color-accent);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.comments-container h3 {
+    color: var(--color-accent);
+    margin-bottom: 15px;
+}
+
+.comment-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.comment-date {
+    color: #888;
+    font-size: 0.8em;
+}
+
+.comment-rating {
+    color: gold;
+}
+
+.comment-body p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.comment-actions {
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+}
+
+.comment-actions button {
+    background: var(--color-accent);
+    border: none;
+    padding: 3px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+#comment-form {
+    margin-top: 20px;
+}
+
+#comment-form textarea {
+    width: 100%;
+    height: 80px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+    resize: vertical;
+}
+
+.rating-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#comment-form select {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+#comment-form button {
+    width: 100%;
+    background: var(--color-accent);
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.average-rating {
+    background: rgba(139, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.average-rating h4 {
+    color: gold;
+    margin: 0 0 5px 0;
+}
+
+.average-rating p {
+    font-size: 0.9em;
+    color: #aaa;
+    margin: 0;
+}
+
+/* --- Auth Page Styles --- */
+#auth-page.page-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(139, 0, 0, 0.2));
+}
+
+.login-form,
+.signup-form {
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid var(--color-accent);
+    border-radius: 8px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+}
+
+.login-form h2,
+.signup-form h2 {
+    color: var(--color-accent);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--color-text-light);
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    color: var(--color-text-light);
+    font-size: 14px;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--color-figma-red);
+    box-shadow: 0 0 10px rgba(255, 145, 2, 0.3);
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: var(--color-accent);
+    color: black;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-submit:hover {
+    background: var(--color-figma-red);
+    transform: translateY(-2px);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    background: #666;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.toggle-form {
+    text-align: center;
+    margin-top: 20px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.toggle-form a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.toggle-form a:hover {
+    color: var(--color-figma-red);
+    text-decoration: underline;
+}

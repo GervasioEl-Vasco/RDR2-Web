@@ -1,0 +1,192 @@
+/* --- ABOUT PAGE STYLE (Layout Tiga Kolom & Tab yang Diperbaiki) --- */
+
+#about.page-content {
+    height: auto; 
+    min-height: calc(100vh - 80px);
+    overflow-y: auto;
+    padding-top: 80px; 
+}
+
+/* 1. Kontainer Tabs Karakter */
+.character-tabs {
+    list-style: none;
+    display: flex;
+    
+    /* REVISI KUNCI: POSISI ABSOLUT DI KANAN ATAS */
+    position: absolute; 
+    
+    /* UBAH: Set top ke nilai yang lebih besar (sekitar tinggi header) */
+    top: 90px; /* Nilai sekitar 90px menempatkannya di bawah header fixed */
+    right: 23px; /* Jarak dari kanan halaman */
+    
+    margin: 0; 
+    padding: 0;
+    
+    font-size: 13px;
+    justify-content: flex-end; /* Item rata kanan */
+    width: auto; 
+    
+    /* REVISI KUNCI Z-INDEX: Nilai sangat tinggi agar di atas konten halaman, tetapi di bawah header */;
+    z-index: 20; 
+}
+
+.character-tabs li {
+    margin: 0 15px;
+}
+
+.character-tabs li a {
+    color: #aaa;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: color 0.3s;
+}
+
+.character-tabs li a.active {
+    color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent);
+}
+
+/* 2. Flex Container Utama (3 Kolom) */
+.about-flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 40px 40px 40px;
+    
+    /* REVISI: Mengatur posisi yang valid */
+    position: relative; 
+    
+    min-height: 900px; 
+}
+
+/* Kolom Kiri - Deskripsi */
+.about-left {
+    width: 30%; 
+    order: 1;
+    z-index: 10; 
+
+    padding-top: 190px;
+    position: relative; 
+}
+
+/* Kolom Tengah - Untuk Gambar Karakter */
+.about-center {
+    width: 40%; 
+    order: 2;
+    position: relative; 
+    min-height: 815px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start;
+}
+
+/* Background Merah untuk Gambar Karakter (Rectangle 1 dari Figma) */
+.char-image-container {
+    position: absolute; 
+    width: 277px;
+    height: 700px;
+    left: 50%; 
+    transform: translateX(-50%); 
+    top: 5px; 
+
+    background: var(--color-figma-red); 
+    border-radius: 68px;
+    overflow: hidden; 
+    
+    position: relative; 
+    z-index: 5; 
+}
+
+/* Gambar Karakter di dalam Background Merah */
+.char-image-container img {
+    position: absolute; 
+    width: 355px;
+    height: 719px;
+    
+    left: 35%; 
+    transform: translateX(-35%); 
+    top: 35px; 
+    
+    object-fit: cover; 
+    opacity: 1; 
+    z-index: 6; 
+}
+
+/* Kolom Kanan - Sinopsis */
+.about-right {
+    width: 30%; 
+    border-left: none; 
+    padding-left: 0;
+    order: 3;
+    z-index: 10; 
+    
+    /* REVISI KUNCI: Menambah padding atas agar teks sinopsis dimulai DI BAWAH TABS */
+    padding-top: 200px; 
+    
+    position: relative; /* PENTING: Menjadikan ini parent untuk pseudoelement dan tabs */
+}
+
+
+
+/* Media Query Responsif */
+@media (min-width: 1025px) and (max-width: 1366px), (max-height: 800px) {
+
+   
+
+    /* Mengurangi tinggi minimal kontainer fleksibel */
+
+    .about-flex-container {
+
+        min-height: 700px; /* Diturunkan dari 900px */
+
+    }
+
+
+
+    /* Mengurangi tinggi background karakter merah */
+
+    .char-image-container {
+
+        height: 570px; /* Diturunkan dari 750px */
+
+        top: 10px;
+
+    }
+
+   
+
+    /* Mengurangi tinggi gambar karakter Arthur */
+
+    .char-image-container img {
+
+        height: 550px; /* Diturunkan dari 719px */
+
+        top: 25px; /* Posisikan ulang agar pas */
+
+    }
+
+
+
+    /* Mengurangi panjang garis sinopsis */
+
+    .about-right::before {
+
+        height: 580px; /* Diturunkan dari 750px */
+
+    }
+
+
+
+    .char-content h1 {
+
+        font-size: 2.5em;
+
+    }
+
+    p {
+
+        font-size: 13px;
+
+    }
+
+}

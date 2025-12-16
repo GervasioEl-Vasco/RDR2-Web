@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Red Dead Redemption II">
+    <title>Red Dead Redemption II</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rye&family=Righteous&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/about.css">
+    <link rel="stylesheet" href="css/character.css">
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/quiz.css">
+    <link rel="icon" type="image/png" href="media/rdr.png">
+</head>
+<body>
+
+    <header>
+        <div class="logo-image-placeholder"></div>
+        <!-- index.html - update nav links -->
+            <nav>
+                <ul>
+                    <li><a href="javascript:void(0)" data-page="home" class="active">HOME</a></li>
+                    <li><a href="javascript:void(0)" data-page="about">ABOUT</a></li>
+                    <li><a href="javascript:void(0)" data-page="character">CHARACTER</a></li>
+                    <li><a href="javascript:void(0)" data-page="game">GAME</a></li>
+                    <li><a href="javascript:void(0)" data-page="quiz">QUIZ</a></li>
+                    <li id="user-menu" style="display: none;">
+                        <a href="javascript:void(0)" id="logout-btn">LOGOUT</a>
+                    </li>
+                </ul>
+            </nav>
+    </header>
+
+    <div id="auth-page" class="page-content">
+        <!-- Login Form -->
+        <!-- Login Form -->
+            <div class="login-form">
+                <h2>Login</h2>
+                <form id="loginForm">  <!-- HAPUS name="loginForm", tambah id -->
+                    <div class="form-group">
+                        <label for="username_login">Username atau Email:</label>
+                        <input type="text" id="username_login" name="username_login" placeholder="Username atau Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_login">Password:</label>
+                        <input type="password" id="password_login" name="password_login" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Login</button>
+                    <p class="toggle-form">Belum punya akun? <a href="#" onclick="toggleForm()">Daftar sekarang</a></p>
+                </form>
+            </div>
+
+        <!-- Signup Form -->
+        <div class="signup-form" style="display: none;">
+            <h2>Daftar Akun Baru</h2>
+            <form name="signupForm" id="signupForm">
+                <div class="form-group">
+                    <label for="username_signup">Username:</label>
+                    <input type="text" id="username_signup" name="username_signup" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email_signup">Email:</label>
+                    <input type="email" id="email_signup" name="email_signup" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password_signup">Password:</label>
+                    <input type="password" id="password_signup" name="password_signup" placeholder="Password (minimal 6 karakter)" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password_signup">Konfirmasi Password:</label>
+                    <input type="password" id="confirm_password_signup" name="confirm_password_signup" placeholder="Konfirmasi Password" required>
+                </div>
+                <button type="submit" class="btn-submit">Daftar</button>
+                <p class="toggle-form">Sudah punya akun? <a href="#" onclick="toggleForm()">Login sekarang</a></p>
+            </form>
+        </div>
+    </div>
+
+    <main id="content-container">
+    </main>
+
+    <!-- Comments Section Template (Hidden by default) -->
+    <div id="comments-section" class="comments-section" style="display: none;">
+        <div class="comments-container">
+            <h3>User Comments</h3>
+            <div id="comments-list"></div>
+            <form id="comment-form">
+                <textarea id="comment-text" placeholder="Add your comment..." required></textarea>
+                <div class="rating-input">
+                    <span>Rating:</span>
+                    <select id="comment-rating">
+                        <option value="5">★★★★★</option>
+                        <option value="4">★★★★☆</option>
+                        <option value="3">★★★☆☆</option>
+                        <option value="2">★★☆☆☆</option>
+                        <option value="1">★☆☆☆☆</option>
+                    </select>
+                </div>
+                <button type="submit">Submit Comment</button>
+            </form>
+        </div>
+    </div>
+
+<!-- Scripts -->
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/script.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/comments.js"></script>
+</body>
+</html>
