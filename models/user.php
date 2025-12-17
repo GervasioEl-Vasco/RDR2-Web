@@ -1,149 +1,139 @@
 <?php
-// models/User.php
+// models/user.php
 
-class User {
+class user {
+
     private $conn;
-    private $table = "users";
+    private $table = 'users';
 
-    public $id;
-    public $username;
-    public $email;
-    public $password;
-    public $user_type;
-    public $created_at;
-    public $last_login;
+    public $id = null;
+    public $username = '';
+    public $email = '';
+    public $password = '';
+    public $user_type = 'member';
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    // CREATE - Register user
-    public function register() {
-        $query = "INSERT INTO " . $this->table . " 
-                  SET username = :username, email = :email, 
-                      password = :password, user_type = :user_type";
-        
+    // =========================
+    // REGISTER
+    // =========================
+    public function register(): bool {
+        $sql = "INSERT INTO {$this->table}
+                (username, email, password, user_type)
+                VALUES (:username, :email, :password, :user_type)";
+
         try {
-            $stmt = $this->conn->prepare($query);
-            
-            $this->password = password_hash($this->password, PASSWORD_BCRYPT);
-            
-            $stmt->bindParam(":username", $this->username);
-            $stmt->bindParam(":email", $this->email);
-            $stmt->bindParam(":password", $this->password);
-            $stmt->bindParam(":user_type", $this->user_type);
-            
-            if($stmt->execute()) {
-                return true;
-            }
-            return false;
+            $stmt = $this->conn->prepare($sql);
+            $hash = password_hash($this->password, PASSWORD_BCRYPT);
+
+            return $stmt->execute([
+                ':username'  => $this->username,
+                ':email'     => $this->email,
+                ':password'  => $hash,
+                ':user_type' => $this->user_type
+            ]);
         } catch (PDOException $e) {
-            error_log("Register Error: " . $e->getMessage());
+            error_log('Register error: ' . $e->getMessage());
             return false;
         }
     }
 
-    // READ - Login user
-    public function login() {
-        $query = "SELECT id, username, email, password, user_type 
-                  FROM " . $this->table . " 
-                  WHERE username = :username OR email = :email 
-                  LIMIT 1";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":username", $this->username);
-        $stmt->bindParam(":email", $this->email);
-        $stmt->execute();
-        
-        if($stmt->rowCount() > 0) {
+    // =========================
+    // LOGIN
+    // =========================
+    public function login(): bool {
+
+        $sql = "SELECT id, username, email, password, user_type
+                FROM {$this->table}
+                WHERE username = :username OR email = :email
+                LIMIT 1";
+
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([
+                ':username' => $this->username,
+                ':email'    => $this->email
+            ]);
+
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if(password_verify($this->password, $row['password'])) {
-                $this->id = $row['id'];
-                $this->username = $row['username'];
-                $this->email = $row['email'];
-                $this->user_type = $row['user_type'];
+            if (!$row) {
+                return false;
+            }
 
-                // Update last login
+            // bcrypt
+            if (password_verify($this->password, $row['password'])) {
+                $this->hydrateUser($row);
                 $this->updateLastLogin();
-
                 return true;
             }
 
-            // Backwards compatibility: if the stored password is plain text (legacy),
-            // allow login and migrate to bcrypt by re-hashing and updating the DB.
+            // legacy plaintext
             if ($row['password'] === $this->password) {
-                try {
-                    $newHash = password_hash($this->password, PASSWORD_BCRYPT);
-                    $update = "UPDATE " . $this->table . " SET password = :pass WHERE id = :id";
-                    $uStmt = $this->conn->prepare($update);
-                    $uStmt->bindParam(':pass', $newHash);
-                    $uStmt->bindParam(':id', $row['id']);
-                    $uStmt->execute();
-                } catch (Exception $e) {
-                    // Non-fatal: proceed with login even if migration fails
-                    error_log('Password migration failed: ' . $e->getMessage());
-                }
-
-                $this->id = $row['id'];
-                $this->username = $row['username'];
-                $this->email = $row['email'];
-                $this->user_type = $row['user_type'];
+                $this->migratePassword($row['id'], $this->password);
+                $this->hydrateUser($row);
                 $this->updateLastLogin();
                 return true;
             }
+
+            return false;
+
+        } catch (PDOException $e) {
+            error_log('Login error: ' . $e->getMessage());
+            return false;
         }
-        return false;
     }
 
-    // UPDATE - Update last login
-    private function updateLastLogin() {
-        $query = "UPDATE " . $this->table . " 
-                  SET last_login = CURRENT_TIMESTAMP 
-                  WHERE id = :id";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $this->id);
-        $stmt->execute();
+    // =========================
+    // EXISTS CHECK
+    // =========================
+    public function usernameExists($username = null): bool {
+        $stmt = $this->conn->prepare(
+            "SELECT id FROM {$this->table} WHERE username = :u LIMIT 1"
+        );
+        $stmt->execute([':u' => $username ?? $this->username]);
+        return (bool)$stmt->fetch();
     }
 
-    // READ - Get user by ID
-    public function getUserById($id) {
-        $query = "SELECT id, username, email, user_type, created_at 
-                  FROM " . $this->table . " 
-                  WHERE id = :id";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $id);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    public function emailExists($email = null): bool {
+        $stmt = $this->conn->prepare(
+            "SELECT id FROM {$this->table} WHERE email = :e LIMIT 1"
+        );
+        $stmt->execute([':e' => $email ?? $this->email]);
+        return (bool)$stmt->fetch();
     }
 
-    // READ - Check if username exists
-    public function usernameExists($username = null) {
-        $uname = $username ?? $this->username;
-        $query = "SELECT id FROM " . $this->table . " 
-                  WHERE username = :username";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":username", $uname);
-        $stmt->execute();
-        
-        return $stmt->rowCount() > 0;
+    // =========================
+    // INTERNAL
+    // =========================
+    private function hydrateUser(array $row): void {
+        $this->id        = (int)$row['id'];
+        $this->username  = $row['username'];
+        $this->email     = $row['email'];
+        $this->user_type = $row['user_type'];
     }
 
-    // READ - Check if email exists
-    public function emailExists($email = null) {
-        $em = $email ?? $this->email;
-        $query = "SELECT id FROM " . $this->table . " 
-                  WHERE email = :email";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":email", $em);
-        $stmt->execute();
-        
-        return $stmt->rowCount() > 0;
+    private function updateLastLogin(): void {
+        try {
+            $stmt = $this->conn->prepare(
+                "UPDATE {$this->table} SET last_login = NOW() WHERE id = :id"
+            );
+            $stmt->execute([':id' => $this->id]);
+        } catch (PDOException $e) {
+            error_log('Last login update failed: ' . $e->getMessage());
+        }
+    }
+
+    private function migratePassword($id, $plainPassword): void {
+        try {
+            $hash = password_hash($plainPassword, PASSWORD_BCRYPT);
+            $stmt = $this->conn->prepare(
+                "UPDATE {$this->table} SET password = :p WHERE id = :id"
+            );
+            $stmt->execute([':p' => $hash, ':id' => $id]);
+        } catch (PDOException $e) {
+            error_log('Password migration failed: ' . $e->getMessage());
+        }
     }
 }
-?>
