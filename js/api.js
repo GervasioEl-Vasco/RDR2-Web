@@ -1,5 +1,3 @@
-// js/api.js - API Client untuk komunikasi dengan backend
-
 const API = {
     baseURL: 'api',
     
@@ -20,13 +18,28 @@ const API = {
 
         try {
             const response = await fetch(url, options);
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.message || 'API request failed');
+
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'API request failed');
+                }
+
+                return result;
+            } else {
+                // Handle non-JSON responses (like HTML error pages)
+                const text = await response.text();
+                console.error('Non-JSON response received:', text.substring(0, 200) + '...');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                throw new Error('Server returned non-JSON response');
             }
-            
-            return result;
         } catch (error) {
             console.error('API Error:', error);
             console.error('URL was:', url);
