@@ -15,10 +15,7 @@ class user {
     public function __construct($db) {
         $this->conn = $db;
     }
-
-    // =========================
     // REGISTER
-    // =========================
     public function register(): bool {
         $sql = "INSERT INTO {$this->table}
                 (username, email, password, user_type)
@@ -40,9 +37,7 @@ class user {
         }
     }
 
-    // =========================
     // LOGIN
-    // =========================
     public function login(): bool {
 
         $sql = "SELECT id, username, email, password, user_type
@@ -85,9 +80,8 @@ class user {
         }
     }
 
-    // =========================
+
     // EXISTS CHECK
-    // =========================
     public function usernameExists($username = null): bool {
         $stmt = $this->conn->prepare(
             "SELECT id FROM {$this->table} WHERE username = :u LIMIT 1"
@@ -104,9 +98,7 @@ class user {
         return (bool)$stmt->fetch();
     }
 
-    // =========================
     // INTERNAL
-    // =========================
     private function hydrateUser(array $row): void {
         $this->id        = (int)$row['id'];
         $this->username  = $row['username'];
