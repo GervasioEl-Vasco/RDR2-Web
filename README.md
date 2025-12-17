@@ -1,9 +1,9 @@
 # RDR2 Web Project Pemweb
 
 ## Anggota Kelompok
-- Khoiri Faldi Marwan Haki
-- Ilham Huda
-- Zaki Fatah
+- Khoiri Faldi Marwan Hakim - H1D024105
+- Zaki Fatah Alfikri - H1D024124
+- Muhammad Ilham Huda Saputra - H1D024126
 
 ## Deskripsi
 Aplikasi web interaktif bertema Red Dead Redemption II (RDR2) yang menyediakan:
