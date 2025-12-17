@@ -1,18 +1,16 @@
 RewriteEngine On
 
-# Existing files/directories
+# API HARUS PRIORITAS
+RewriteCond %{REQUEST_URI} ^/api/ [NC]
+RewriteRule .* - [L]
+
+# FILE & FOLDER ASLI
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# API calls
-RewriteRule ^api/ - [L]
+# ASSETS
+RewriteRule \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json)$ - [L,NC]
 
-# SPA routes - semua route valid arahkan ke index.html
-RewriteRule ^(home|about|character|game|quiz|)/?$ index.html [L]
-
-# Assets
-RewriteRule \.(js|css|png|jpg|gif|ico|svg|woff|woff2|ttf|eot|json)$ - [L]
-
-# Fallback to index.html
+# SPA FALLBACK
 RewriteRule ^ index.html [L]
