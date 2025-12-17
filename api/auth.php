@@ -1,152 +1,126 @@
 <?php
-// api/auth.php
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
 
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: https://rdr2.beevolution24.my.id");
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../includes/session.php';
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
-$database = new Database();
-$db = $database->getConnection();
+ini_set('session.cookie_secure', 1);
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_samesite', 'Lax');
 
+session_start();
+
+// LOAD DEPENDENCIES
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/user.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/session.php';
+
+// DATABASE
+$db = (new Database())->getConnection();
 if (!$db) {
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Database connection failed'
-    ]);
-    exit();
+    echo json_encode(['success' => false, 'message' => 'DB error']);
+    exit;
 }
 
 $user = new User($db);
 
-$data = json_decode(file_get_contents("php://input"));
+// INPUT (JSON / FORM)
+$raw  = file_get_contents("php://input");
+$data = json_decode($raw, true);
+if (!is_array($data)) {
+    $data = $_POST;
+}
 
-$response = array();
+// ACTION
+$action   = $_GET['action'] ?? '';
+$response = ['success' => false];
 
-// Allow "check" to be performed via GET for client convenience
-$action = $_GET['action'] ?? '';
+// AUTH CHECK
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'check') {
-    if (AppSessionHandler::isLoggedIn()) {
-        $response['success'] = true;
-        $response['user'] = array(
+
+    echo json_encode([
+        'success' => AppSessionHandler::isLoggedIn(),
+        'user' => AppSessionHandler::isLoggedIn() ? [
             'id' => AppSessionHandler::getUserId(),
             'username' => AppSessionHandler::getUsername(),
             'user_type' => AppSessionHandler::getUserType()
-        );
-    } else {
-        $response['success'] = false;
-        $response['message'] = 'Not logged in';
+        ] : null
+    ]);
+    exit;
+}
+
+// POST ACTIONS
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // -------- REGISTER --------
+    if ($action === 'register') {
+
+        $user->username  = trim($data['username'] ?? '');
+        $user->email     = trim($data['email'] ?? '');
+        $user->password  = trim($data['password'] ?? '');
+        $user->user_type = 'member';
+
+        if (!$user->username || !$user->email || !$user->password) {
+            $response['message'] = 'Semua field wajib diisi';
+        } elseif ($user->usernameExists()) {
+            $response['message'] = 'Username sudah digunakan';
+        } elseif ($user->emailExists()) {
+            $response['message'] = 'Email sudah digunakan';
+        } elseif ($user->register()) {
+            $response = ['success' => true, 'message' => 'Registrasi berhasil'];
+        } else {
+            $response['message'] = 'Registrasi gagal';
+        }
+    }
+
+    elseif ($action === 'login') {
+
+        $user->username = trim($data['username_email'] ?? $data['username'] ?? '');
+        $user->email    = $user->username;
+        $user->password = trim($data['password'] ?? '');
+
+        if (!$user->username || !$user->password) {
+            $response['message'] = 'Username dan password wajib';
+        } elseif ($user->login()) {
+
+            AppSessionHandler::login(
+                $user->id,
+                $user->username,
+                $user->user_type
+            );
+
+            $response = [
+                'success' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'user_type' => $user->user_type
+                ]
+            ];
+        } else {
+            $response['message'] = 'Login gagal';
+        }
+    }
+
+    elseif ($action === 'logout') {
+        AppSessionHandler::logout();
+        $response = ['success' => true];
+    }
+
+    else {
+        $response['message'] = 'Aksi tidak valid';
     }
 
     echo json_encode($response);
-    exit();
+    exit;
 }
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $action = $_GET['action'] ?? '';
-    
-    switch($action) {
-        case 'register':
-            // Validasi input
-            $username = isset($data->username) ? trim($data->username) : '';
-            $email = isset($data->email) ? trim($data->email) : '';
-            $password = isset($data->password) ? trim($data->password) : '';
-            
-            if(empty($username) || empty($email) || empty($password)) {
-                $response['success'] = false;
-                $response['message'] = 'Semua field harus diisi';
-            } elseif($user->usernameExists($username)) {
-                $response['success'] = false;
-                $response['message'] = 'Username sudah digunakan';
-            } elseif($user->emailExists($email)) {
-                $response['success'] = false;
-                $response['message'] = 'Email sudah digunakan';
-            } else {
-                $user->username = $username;
-                $user->email = $email;
-                $user->password = $password;
-                $user->user_type = 'member'; // Default user type
-                
-                try {
-                    if($user->register()) {
-                        $response['success'] = true;
-                        $response['message'] = 'Registrasi berhasil! Silakan login.';
-                    } else {
-                        $response['success'] = false;
-                        $response['message'] = 'Registrasi gagal. Coba lagi.';
-                    }
-                } catch (Exception $e) {
-                    $response['success'] = false;
-                    $response['message'] = 'Error: ' . $e->getMessage();
-                }
-            }
-            break;
-            
-        case 'login':
-            // Handle both username_email (dari API JS) dan username (dari form biasa)
-            $username_input = $data->username_email ?? $data->username ?? '';
-            $password_input = $data->password ?? '';
-            
-            if(empty($username_input) || empty($password_input)) {
-                $response['success'] = false;
-                $response['message'] = 'Username dan password harus diisi';
-            } else {
-                $user->username = $username_input;
-                $user->email = $username_input; // Juga bisa login dengan email
-                $user->password = $password_input;
-                
-                if($user->login()) {
-                    AppSessionHandler::login($user->id, $user->username, $user->user_type);
-
-                    $response['success'] = true;
-                    $response['message'] = 'Login berhasil!';
-                    $response['user'] = array(
-                        'id' => $user->id,
-                        'username' => $user->username,
-                        'email' => $user->email,
-                        'user_type' => $user->user_type
-                    );
-                } else {
-                    // Log failed login for debugging (do not log password)
-                    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-                    error_log("Failed login attempt for: $username_input from IP: $ip");
-
-                    $response['success'] = false;
-                    $response['message'] = 'Username/email atau password salah';
-                }
-            }
-            break;
-            
-        case 'logout':
-            AppSessionHandler::logout();
-            $response['success'] = true;
-            $response['message'] = 'Logout berhasil';
-            break;
-            
-        case 'check':
-            if(AppSessionHandler::isLoggedIn()) {
-                $response['success'] = true;
-                $response['user'] = array(
-                    'id' => AppSessionHandler::getUserId(),
-                    'username' => AppSessionHandler::getUsername(),
-                    'user_type' => AppSessionHandler::getUserType()
-                );
-            } else {
-                $response['success'] = false;
-                $response['message'] = 'Not logged in';
-            }
-            break;
-            
-        default:
-            $response['success'] = false;
-            $response['message'] = 'Aksi tidak valid';
-    }
-}
-
-echo json_encode($response);
-?>
